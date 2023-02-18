@@ -10,6 +10,7 @@ from pandas_profiling import ProfileReport
 INPUT_DATA_PATH = Path("/home/hannes/projects/kaggle/data/input/titanic")
 OUPUT_DATA_PATH = Path("/home/hannes/projects/kaggle/data/output/titanic")
 
+
 # Load the data into a Pandas dataframe
 def load_data(filepath: Path):
     df = pd.read_csv(filepath)
@@ -98,28 +99,37 @@ def generate_report(df: pd.DataFrame):
 
 
 def generic_summary(input_file_path: Path, output_folder: Path):
+    summary = {}
     # Make sure that output_folder exists
     output_folder.mkdir(parents=True, exist_ok=True)
     # Load data
     df = load_data(filepath=input_file_path)
 
     # Save a sample dataframe
-    df.sample(10).to_csv(output_folder / "sample.csv")
+    df_sample = df.sample(10)
+    summary["df_sample"] = df_sample
+    df_sample.to_csv(output_folder / "sample.csv")
 
     # Get sumamry
     df_summary = get_summary(df)
+    summary["df_summary"] = df_summary
     save_data(df_summary, folder=output_folder, name="summary")
 
     # Get value counts
     value_counts, figures = compute_value_counts(
         df, max_unique_values=10, generate_figures=True
     )
+    summary["value_counts"] = value_counts
+    summary["value_count_figures"] = figures
     save_data_in_dict(value_counts, folder=output_folder / "value_counts")
     save_data_in_dict(figures, folder=output_folder / "value_counts")
 
     # Create pandas profiling report
     profile = generate_report(df)
+    summary["profile"] = profile
     save_data(profile, folder=output_folder, name="pandas_profiling_report")
+
+    return summary
 
 
 if __name__ == "__main__":

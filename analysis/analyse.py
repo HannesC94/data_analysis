@@ -98,6 +98,8 @@ def generate_report(df: pd.DataFrame):
 
 
 def generic_summary(input_file_path: Path, output_folder: Path):
+    # Make sure that output_folder exists
+    output_folder.mkdir(parents=True, exist_ok=True)
     # Load data
     df = load_data(filepath=input_file_path)
 
